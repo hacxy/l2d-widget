@@ -11,6 +11,26 @@ createWidget({
 });
 ```
 
+## Dragging
+
+Set `draggable` to `true` to let visitors drag the model anywhere on the page — handy when it covers content. A drag only starts after the pointer moves more than 5px, so tapping the model and the hover menu keep working, and the widget is pulled back into view when the window shrinks:
+
+```ts
+createWidget({
+  model: { path: '/models/model.json' },
+  draggable: true,
+});
+```
+
+Pass an object with `storageKey` to save the position to localStorage and restore it after a reload:
+
+```ts
+createWidget({
+  model: { path: '/models/model.json' },
+  draggable: { storageKey: 'l2d-widget-position' },
+});
+```
+
 ## Size
 
 Canvas defaults to `300`px. Pass a number for a square, or an object for separate width/height:

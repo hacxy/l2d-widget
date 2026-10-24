@@ -1,6 +1,7 @@
 const demos: Record<string, () => Promise<{ default: { run: () => void } }>> = {
   'basic': () => import('./basic'),
   'bottom-right': () => import('./bottom-right'),
+  'draggable': () => import('./draggable'),
   'custom-menu': () => import('./custom-menu'),
   'multi-model': () => import('./multi-model'),
   'transition': () => import('./transition'),

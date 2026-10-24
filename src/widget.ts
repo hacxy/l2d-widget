@@ -3,6 +3,7 @@ import type { TipsHandle } from './modules/tips.js';
 import type { MenusOptions, ModelOptions, TipsOptions, Widget, WidgetOptions } from './types.js';
 import { init } from 'l2d';
 import { getDefaultItems } from './defaults.js';
+import { setupDrag } from './modules/drag.js';
 import { createMenu } from './modules/menu.js';
 import { createStatusBar } from './modules/status-bar.js';
 import { createTips } from './modules/tips.js';
@@ -17,9 +18,14 @@ function buildAnimationStyle(useSlide: boolean, duration: number) {
     : { opacity: '0', transition: `opacity ${duration}ms ease-in-out`, willChange: 'opacity' };
 }
 
+// 默认贴在底部，往下滑自身高度的 130% 就出了视口；拖动过的挂件可能停在屏幕中间，要滑一整个视口高度才藏得住
+function hiddenTransform(container: HTMLDivElement) {
+  return container.style.top ? 'translateY(100vh)' : 'translateY(130%)';
+}
+
 function applyStyle(container: HTMLDivElement, useSlide: boolean, visible: boolean) {
   if (useSlide) {
-    container.style.transform = visible ? 'translateY(0)' : 'translateY(130%)';
+    container.style.transform = visible ? 'translateY(0)' : hiddenTransform(container);
   }
   else {
     container.style.opacity = visible ? '1' : '0';
@@ -100,6 +106,10 @@ export function createWidget(options: WidgetOptions): Widget {
   Object.assign(canvas.style, { width: '100%', height: '100%', pointerEvents: 'auto' });
   container.appendChild(canvas);
   document.body.appendChild(container);
+
+  const cancelDrag = setupDrag(container, canvas, options.draggable);
+  // 恢复了上次拖动的位置时，入场前的隐藏位置也要跟着换
+  applyStyle(container, useSlide, false);
 
   const statusBar = createStatusBar(position, transitionDuration, height, primaryColor, statusBarOptions?.style);
   document.body.appendChild(statusBar.el);
@@ -233,6 +243,7 @@ export function createWidget(options: WidgetOptions): Widget {
     async destroy() {
       stopTipsLoop();
       cancelHover();
+      cancelDrag();
       tips?.destroy();
       menu.destroy();
       statusBar.destroy();

@@ -38,6 +38,23 @@ createWidget({
 
 </DemoBlock>
 
+## 拖动
+
+拖动模型，刷新后还在原来的位置：
+
+<DemoBlock demo="draggable">
+
+```ts
+createWidget({
+  model: {
+    path: 'https://model.hacxy.cn/cat-black/model.json',
+  },
+  draggable: { storageKey: 'l2d-widget-demo-position' },
+});
+```
+
+</DemoBlock>
+
 ## 多模型切换
 
 给两个模型，菜单里就多了切换按钮：

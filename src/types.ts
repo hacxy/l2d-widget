@@ -83,6 +83,14 @@ export interface WidgetOptions {
   transitionDuration?: number
   /** 入场/退场动画类型，默认 'slide' */
   transitionType?: 'slide' | 'fade'
+  /**
+   * 是否允许用鼠标或手指拖动挂件，默认 false。
+   * 传对象并指定 storageKey 时，拖动后的位置会存进 localStorage，刷新页面后恢复
+   */
+  draggable?: boolean | {
+    /** 保存位置用的 localStorage 键名，不填则不保存 */
+    storageKey?: string
+  }
   /** 菜单配置 */
   menus?: MenusOptions
   /** 状态条配置 */
