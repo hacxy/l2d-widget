@@ -83,6 +83,16 @@ export interface WidgetOptions {
   transitionDuration?: number
   /** 入场/退场动画类型，默认 'slide' */
   transitionType?: 'slide' | 'fade'
+  /**
+   * 是否允许用鼠标或手指拖动挂件，默认 false。
+   * 开启后默认菜单里会多一个锁定 / 解锁拖动的按钮
+   */
+  draggable?: boolean | {
+    /** 按下后移动超过多少 px 才算拖动，默认 5；设得太小时轻点模型容易被当成拖动 */
+    threshold?: number
+    /** 是否把拖动后的位置和锁定状态存进 localStorage，刷新页面后恢复，默认 false */
+    keepPosition?: boolean
+  }
   /** 菜单配置 */
   menus?: MenusOptions
   /** 状态条配置 */
@@ -99,6 +109,10 @@ export interface Widget {
   switchModel: (index: number) => Promise<void>
   /** 隐藏模型，显示休息状态条；点击状态条可恢复 */
   sleep: () => void
+  /** 当前是否可以拖动 */
+  readonly draggable: boolean
+  /** 打开或关闭拖动，没配 draggable 的挂件也能用；开了 keepPosition 时锁定状态会一起记住 */
+  setDraggable: (enabled: boolean) => void
   /** 销毁 widget，退场动画完成后释放 WebGL 资源并移除 DOM */
   destroy: () => Promise<void>
 }

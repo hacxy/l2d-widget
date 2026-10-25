@@ -93,6 +93,7 @@ createWidget({
 | `l2d`                | Underlying `l2d` instance                |
 | `switchModel(index)` | Switch to a model by index               |
 | `sleep()`            | Hide model; click the status bar to wake |
+| `setDraggable(on)`   | Turn dragging on or off                  |
 | `destroy()`          | Tear down widget and release resources   |
 
 For the full options reference (`WidgetOptions`, `ModelOptions`, `MenusOptions`, `TipsOptions`), see the [documentation](https://l2d-widget.hacxy.cn).

@@ -38,6 +38,23 @@ createWidget({
 
 </DemoBlock>
 
+## Dragging
+
+Drag the model around; it stays where you left it after a reload:
+
+<DemoBlock demo="draggable">
+
+```ts
+createWidget({
+  model: {
+    path: 'https://model.hacxy.cn/cat-black/model.json',
+  },
+  draggable: { keepPosition: true },
+});
+```
+
+</DemoBlock>
+
 ## Multi-Model Switching
 
 Two models — the switch button shows up on its own:

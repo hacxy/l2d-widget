@@ -95,6 +95,7 @@ createWidget({
 | `l2d`                | 底层 l2d 实例，用于高级控制          |
 | `switchModel(index)` | 异步切换到指定索引的模型             |
 | `sleep()`            | 隐藏模型并显示休眠状态栏，点击可唤醒 |
+| `setDraggable(on)`   | 打开或关闭拖动                       |
 | `destroy()`          | 销毁挂件，释放 WebGL 资源并移除 DOM  |
 
 完整配置项见[文档站](https://l2d-widget.hacxy.cn)。
