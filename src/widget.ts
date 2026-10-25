@@ -1,3 +1,4 @@
+import type { DragHandle } from './modules/drag.js';
 import type { MenuHandle } from './modules/menu.js';
 import type { TipsHandle } from './modules/tips.js';
 import type { MenusOptions, ModelOptions, TipsOptions, Widget, WidgetOptions } from './types.js';
@@ -32,10 +33,10 @@ function applyStyle(container: HTMLDivElement, useSlide: boolean, visible: boole
   }
 }
 
-function resolveMenuItems(models: ModelOptions[], opts: MenusOptions | undefined) {
+function resolveMenuItems(models: ModelOptions[], opts: MenusOptions | undefined, drag: DragHandle | null) {
   if (opts?.items)
     return opts.items;
-  return [...getDefaultItems(models), ...(opts?.extraItems ?? [])];
+  return [...getDefaultItems(models, drag), ...(opts?.extraItems ?? [])];
 }
 
 function resolveTipsOptions(opts: TipsOptions | false | undefined) {
@@ -107,7 +108,7 @@ export function createWidget(options: WidgetOptions): Widget {
   container.appendChild(canvas);
   document.body.appendChild(container);
 
-  const cancelDrag = setupDrag(container, canvas, options.draggable);
+  const drag = setupDrag(container, canvas, options.draggable);
   // 恢复了上次拖动的位置时，入场前的隐藏位置也要跟着换
   applyStyle(container, useSlide, false);
 
@@ -210,6 +211,13 @@ export function createWidget(options: WidgetOptions): Widget {
   const widget: Widget = {
     get l2d() { return l2dInstance; },
 
+    get draggable() { return drag.enabled; },
+
+    setDraggable(enabled: boolean) {
+      drag.setEnabled(enabled);
+      menu.refresh();
+    },
+
     sleep() {
       stopTipsLoop();
       tips?.hide();
@@ -243,7 +251,7 @@ export function createWidget(options: WidgetOptions): Widget {
     async destroy() {
       stopTipsLoop();
       cancelHover();
-      cancelDrag();
+      drag.destroy();
       tips?.destroy();
       menu.destroy();
       statusBar.destroy();
@@ -254,7 +262,8 @@ export function createWidget(options: WidgetOptions): Widget {
     },
   };
 
-  menu = createMenu(resolveMenuItems(models, menusOptions), widget, {
+  // 开了 draggable 才在默认菜单里放拖动开关
+  menu = createMenu(resolveMenuItems(models, menusOptions, options.draggable ? drag : null), widget, {
     align: menusOptions?.align,
     primaryColor,
     style: menusOptions?.style,

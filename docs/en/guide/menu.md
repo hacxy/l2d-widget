@@ -7,6 +7,7 @@ Circular action buttons appear when you hover over the model.
 Out of the box you get:
 
 - Switch Model — only shown when multiple models are configured
+- Lock / unlock dragging — only shown when `draggable` is on
 - Sleep — hides the model and shows a sleep status bar
 - About — opens the project's GitHub page
 

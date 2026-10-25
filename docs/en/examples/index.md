@@ -49,7 +49,7 @@ createWidget({
   model: {
     path: 'https://model.hacxy.cn/cat-black/model.json',
   },
-  draggable: { storageKey: 'l2d-widget-demo-position' },
+  draggable: { keepPosition: true },
 });
 ```
 

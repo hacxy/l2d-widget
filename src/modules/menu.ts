@@ -22,9 +22,33 @@ async function fetchIcon(iconId: string): Promise<string | null> {
   }
 }
 
+// 按 item 当前的 icon / label 渲染按钮，菜单刷新时也走这里
+function renderButton(btn: HTMLButtonElement, item: MenuItem) {
+  const { icon, label } = item;
+  btn.title = label;
+  if (!icon) {
+    btn.textContent = label;
+    return;
+  }
+  fetchIcon(icon).then(svg => {
+    // 加载期间 item 可能又变了（比如连点拖动开关），只用最新的；加载失败就保留按钮原来的内容
+    if (!svg || item.icon !== icon)
+      return;
+    btn.innerHTML = svg;
+    const svgEl = btn.querySelector('svg');
+    if (svgEl) {
+      Object.assign(svgEl.style, {
+        width: '1em',
+        height: '1em',
+        pointerEvents: 'none',
+      });
+    }
+  });
+}
+
 function createMenuButton(item: MenuItem, widget: Widget, primaryColor: string): HTMLButtonElement {
   const btn = document.createElement('button');
-  btn.title = item.label;
+  // 图标加载出来之前先显示文字
   btn.textContent = item.label;
 
   Object.assign(btn.style, {
@@ -55,23 +79,7 @@ function createMenuButton(item: MenuItem, widget: Widget, primaryColor: string):
     item.onClick(widget);
   });
 
-  if (item.icon) {
-    fetchIcon(item.icon).then(svg => {
-      if (!svg)
-        return;
-      btn.innerHTML = svg;
-      btn.title = item.label;
-      const svgEl = btn.querySelector('svg');
-      if (svgEl) {
-        Object.assign(svgEl.style, {
-          width: '1em',
-          height: '1em',
-          pointerEvents: 'none',
-        });
-      }
-    });
-  }
-
+  renderButton(btn, item);
   return btn;
 }
 
@@ -79,6 +87,8 @@ export interface MenuHandle {
   el: HTMLElement
   show: () => void
   hide: () => void
+  /** 重新读取各菜单项的 icon / label，状态变了（比如拖动开关）时调用 */
+  refresh: () => void
   destroy: () => void
 }
 
@@ -107,9 +117,8 @@ export function createMenu(
   if (style)
     Object.assign(bar.style, style);
 
-  for (const item of items) {
-    bar.appendChild(createMenuButton(item, widget, primaryColor));
-  }
+  const buttons = items.map(item => createMenuButton(item, widget, primaryColor));
+  bar.append(...buttons);
 
   return {
     el: bar,
@@ -120,6 +129,9 @@ export function createMenu(
     hide() {
       bar.style.opacity = '0';
       bar.style.pointerEvents = 'none';
+    },
+    refresh() {
+      items.forEach((item, i) => renderButton(buttons[i]!, item));
     },
     destroy() {
       bar.remove();
